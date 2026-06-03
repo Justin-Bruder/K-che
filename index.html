@@ -180,6 +180,24 @@
     .item:active { background: var(--bg); }
     .item.done { background: var(--accent-bg); }
 
+    .del-btn {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: none;
+      color: #c7c7cc;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 0;
+      transition: color .15s, background .15s;
+    }
+    .del-btn:active { color: #ff3b30; background: rgba(255,59,48,.1); }
+
     .cb {
       width: 22px; height: 22px;
       border-radius: 7px;
@@ -409,9 +427,30 @@ function mkItem(cid, idx, label, checked) {
         <path d="M1.5 5l3 3 6-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    <span class="item-txt">${esc(label)}</span>`;
-  d.onclick = () => toggle(cid, idx);
+    <span class="item-txt">${esc(label)}</span>
+    <button class="del-btn" aria-label="Entfernen">×</button>`;
+  d.querySelector('.cb').parentElement.onclick = null;
+  d.onclick = (e) => { if (!e.target.closest('.del-btn')) toggle(cid, idx); };
+  d.querySelector('.del-btn').onclick = (e) => { e.stopPropagation(); removeItem(cid, idx); };
   return d;
+}
+
+// --- Remove item ---
+function removeItem(cid, idx) {
+  const s = st[cid];
+  s.items.splice(idx, 1);
+  // Shift checked indices down
+  const newChecked = new Set();
+  for (const i of s.checked) {
+    if (i < idx) newChecked.add(i);
+    else if (i > idx) newChecked.add(i - 1);
+  }
+  s.checked = newChecked;
+  persist();
+  const list = document.getElementById('lst-' + cid);
+  list.innerHTML = '';
+  s.items.forEach((item, i) => list.appendChild(mkItem(cid, i, item, s.checked.has(i))));
+  updateProgress();
 }
 
 // --- Reset ---
