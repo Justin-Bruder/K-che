@@ -263,7 +263,7 @@
   </div>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <script>
 const CATS = [
   { id:'fridge',   icon:'🧊', name:'Kühlschrank & Frisches',
@@ -333,17 +333,18 @@ function updateProgress() {
 
 // --- Small confetti burst on single check ---
 function popConfetti(el) {
+  if (typeof confetti !== 'function') return;
   const rect = el.getBoundingClientRect();
-  const x = (rect.left + rect.width / 2) / window.innerWidth;
-  const y = (rect.top  + rect.height / 2) / window.innerHeight;
+  const x = Math.min(Math.max((rect.left + rect.width / 2) / window.innerWidth, 0), 1);
+  const y = Math.min(Math.max((rect.top  + rect.height / 2) / window.innerHeight, 0), 1);
   confetti({
-    particleCount: 18,
-    startVelocity: 18,
-    spread: 70,
+    particleCount: 22,
+    startVelocity: 20,
+    spread: 80,
     origin: { x, y },
-    ticks: 80,
-    scalar: 0.85,
-    gravity: 1.2,
+    ticks: 90,
+    scalar: 0.9,
+    gravity: 1.1,
     colors: ['#34c759','#30d158','#ffcc00','#ff6b6b','#5b8def','#ff9f0a']
   });
 }
