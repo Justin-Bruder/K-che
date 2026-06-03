@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>Einzug</title>
+  <title>Einkaufsliste Küche</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -81,6 +81,25 @@
       width: 0%;
       background: linear-gradient(90deg, #34c759, #30d158);
       transition: width .45s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Page heading ── */
+    .page-heading {
+      text-align: center;
+      padding: 22px 16px 6px;
+    }
+    .page-heading h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.3px;
+    }
+    .page-heading p {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--sub);
+      margin-top: 3px;
+      letter-spacing: .2px;
     }
 
     /* ── Main scroll area ── */
@@ -237,7 +256,12 @@
   <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
 </div>
 
-<main id="main"></main>
+<main id="main">
+  <div class="page-heading">
+    <h1>Einkaufsliste Küche</h1>
+    <p>Justin &amp; Alina</p>
+  </div>
+</main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
 <script>
@@ -307,14 +331,35 @@ function updateProgress() {
   if (total > 0 && done === total) boom();
 }
 
+// --- Small confetti burst on single check ---
+function popConfetti(el) {
+  const rect = el.getBoundingClientRect();
+  const x = (rect.left + rect.width / 2) / window.innerWidth;
+  const y = (rect.top  + rect.height / 2) / window.innerHeight;
+  confetti({
+    particleCount: 18,
+    startVelocity: 18,
+    spread: 70,
+    origin: { x, y },
+    ticks: 80,
+    scalar: 0.85,
+    gravity: 1.2,
+    colors: ['#34c759','#30d158','#ffcc00','#ff6b6b','#5b8def','#ff9f0a']
+  });
+}
+
+// --- Big fireworks when all done ---
 let fired = false;
 function boom() {
   if (fired) return;
   fired = true;
-  const end = Date.now() + 3200;
+  const duration = 4500;
+  const end = Date.now() + duration;
+  const colors = ['#34c759','#ffcc00','#ff6b6b','#5b8def','#ff9f0a','#bf5af2','#ffffff'];
   (function f() {
-    confetti({ particleCount:4, angle:60,  spread:60, origin:{x:0, y:.7} });
-    confetti({ particleCount:4, angle:120, spread:60, origin:{x:1, y:.7} });
+    confetti({ particleCount: 6, angle: 60,  spread: 65, origin: { x: 0,   y: .65 }, colors });
+    confetti({ particleCount: 6, angle: 120, spread: 65, origin: { x: 1,   y: .65 }, colors });
+    confetti({ particleCount: 4, angle: 90,  spread: 100, origin: { x: .5, y: .8  }, colors, startVelocity: 35 });
     if (Date.now() < end) requestAnimationFrame(f);
   })();
 }
@@ -322,11 +367,15 @@ function boom() {
 // --- Toggle ---
 function toggle(cid, idx) {
   const s = st[cid];
-  if (s.checked.has(idx)) { s.checked.delete(idx); fired = false; }
-  else                     { s.checked.add(idx); }
+  const wasChecked = s.checked.has(idx);
+  if (wasChecked) { s.checked.delete(idx); fired = false; }
+  else            { s.checked.add(idx); }
   persist();
   const el = document.getElementById('i-'+cid+'-'+idx);
-  if (el) el.className = 'item' + (s.checked.has(idx) ? ' done' : '');
+  if (el) {
+    el.className = 'item' + (s.checked.has(idx) ? ' done' : '');
+    if (!wasChecked) popConfetti(el);
+  }
   updateProgress();
 }
 
