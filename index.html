@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Einzug</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg:       #f2f2f7;
+      --card:     #ffffff;
+      --accent:   #34c759;
+      --accent-d: #28a745;
+      --accent-bg:#e9fbed;
+      --text:     #1c1c1e;
+      --sub:      #8e8e93;
+      --border:   #e5e5ea;
+      --bar-h:    58px;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 16px;
+      min-height: 100dvh;
+    }
+
+    /* ── Fixed header ── */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding-top: env(safe-area-inset-top, 0px);
+      box-shadow: 0 1px 0 var(--border), 0 2px 12px rgba(0,0,0,.06);
+    }
+    .header-inner {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 11px 16px 0;
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 9px;
+    }
+    .prog-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sub);
+      letter-spacing: .1px;
+    }
+    .prog-label b { color: var(--accent-d); font-weight: 700; }
+    .reset-btn {
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 11px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--sub);
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s, color .15s;
+    }
+    .reset-btn:active { background: var(--bg); color: var(--text); }
+    .bar-track {
+      height: 4px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #34c759, #30d158);
+      transition: width .45s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Main scroll area ── */
+    main {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: calc(var(--bar-h) + env(safe-area-inset-top, 0px) + 14px) 12px calc(32px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* ── Category card ── */
+    .cat {
+      background: var(--card);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    }
+    .cat-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 14px;
+      cursor: pointer;
+      user-select: none;
+      min-height: 50px;
+      gap: 8px;
+    }
+    .cat-hd:active { background: var(--bg); }
+    .cat-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 14.5px;
+      font-weight: 600;
+      flex: 1;
+    }
+    .cat-emoji { font-size: 19px; line-height: 1; flex-shrink: 0; }
+    .cat-meta {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+    .badge {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--sub);
+      background: var(--bg);
+      border-radius: 20px;
+      padding: 2px 8px;
+      white-space: nowrap;
+    }
+    .badge.full { color: var(--accent-d); background: var(--accent-bg); }
+    .chevron {
+      width: 16px; height: 16px;
+      color: var(--sub);
+      transition: transform .22s ease;
+      flex-shrink: 0;
+    }
+    .cat.open .chevron { transform: rotate(180deg); }
+
+    /* ── Body ── */
+    .cat-body { display: none; border-top: 1px solid var(--border); }
+    .cat.open .cat-body { display: block; }
+
+    /* ── Items ── */
+    .item {
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      min-height: 46px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      gap: 12px;
+      transition: background .12s;
+    }
+    .item:last-child { border-bottom: none; }
+    .item:active { background: var(--bg); }
+    .item.done { background: var(--accent-bg); }
+
+    .cb {
+      width: 22px; height: 22px;
+      border-radius: 7px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      transition: background .15s, border-color .15s;
+    }
+    .item.done .cb { background: var(--accent); border-color: var(--accent); }
+    .cb svg { display: none; }
+    .item.done .cb svg { display: block; }
+
+    .item-txt {
+      font-size: 15px;
+      color: var(--text);
+      flex: 1;
+      transition: color .15s;
+      line-height: 1.35;
+    }
+    .item.done .item-txt { text-decoration: line-through; color: var(--sub); }
+
+    /* ── Add row ── */
+    .add-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      background: var(--bg);
+    }
+    .add-input {
+      flex: 1;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      padding: 9px 11px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .add-input:focus { border-color: var(--accent); }
+    .add-input::placeholder { color: var(--sub); }
+    .add-btn {
+      width: 35px; height: 35px;
+      border-radius: 9px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+    .add-btn:active { background: var(--accent-d); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-row">
+      <div class="prog-label"><b id="n-done">0</b> / <span id="n-total">0</span> erledigt</div>
+      <button class="reset-btn" onclick="resetAll()">Zurücksetzen</button>
+    </div>
+  </div>
+  <div class="bar-track"><div class="bar-fill" id="bar-fill"></div></div>
+</div>
+
+<main id="main"></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
+<script>
+const CATS = [
+  { id:'fridge',   icon:'🧊', name:'Kühlschrank & Frisches',
+    items:['Butter','Milch','Sahne','Käse','Schinken','Salami','Eier','Joghurt','Saure Sahne','Parmesan','Frischkäse','Senf','Ketchup','Mayonnaise','Zitrone','Zwiebeln','Knoblauch','Kartoffeln','Möhren','Paprika','Gurke','Salat','Gemüse','Obst'] },
+  { id:'bread',    icon:'🍞', name:'Brot & Aufstrich',
+    items:['Toast','Brötchen (einfrieren)','Nutella','Erdnussbutter','Frischkäse'] },
+  { id:'pantry',   icon:'🥫', name:'Vorratskammer',
+    items:['Nudeln','Reis','Dosentomaten','Passata','Pesto','Tomatenmark','Mais','Kichererbsen','Linsen','Kokosmilch','Gemüsebrühe','Mehl','Zucker','Puderzucker','Backpulver','Paniermehl','Speisestärke','Honig','Haferflocken','Nüsse'] },
+  { id:'oils',     icon:'🫙', name:'Öle, Essig & Soßen',
+    items:['Olivenöl','Rapsöl','Balsamico','Essig','Sojasoße','Worcestersoße','Tabasco / Sriracha','Gewürze (fehlende ergänzen)'] },
+  { id:'frozen',   icon:'❄️', name:'Tiefkühl',
+    items:['TK-Erbsen','Pommes','TK-Pizza','TK-Hähnchen','TK-Steak','TK-Fisch','Eiswürfelform'] },
+  { id:'drinks',   icon:'☕', name:'Getränke',
+    items:['Mineralwasser','Orangensaft','Kaffee','Kaffeefilter','Tee'] },
+  { id:'clean',    icon:'🧹', name:'Putzmittel',
+    items:['Spülmittel','Spülmaschinentabs','Backofenreiniger','Entkalker','Spülschwamm','Spülbürste','WC-Reiniger','WC-Bürste','Allzweckreiniger','Waschmittel','Weichspüler','Besen + Kehrschaufel','Gummihandschuhe'] },
+  { id:'trash',    icon:'🗑️', name:'Müll & Verpackung',
+    items:['Müllbeutel','Frischhaltefolie','Alufolie','Backpapier','Gefrierbeutel'] },
+  { id:'misc',     icon:'🛒', name:'Kleinkram',
+    items:['Küchenrolle','Taschentücher','Zahnstocher','Gummibänder','Klebeband / Tesa','Schere','Pflaster-Set','Batterien'] },
+];
+
+// --- State ---
+let st = {};
+
+function initState() {
+  const raw = localStorage.getItem('einzug2');
+  if (raw) {
+    try {
+      const p = JSON.parse(raw);
+      for (const c of CATS) {
+        const saved = p[c.id] || {};
+        st[c.id] = {
+          items:   Array.isArray(saved.items) ? saved.items : [...c.items],
+          checked: new Set(Array.isArray(saved.checked) ? saved.checked : [])
+        };
+      }
+      return;
+    } catch(e) {}
+  }
+  for (const c of CATS) st[c.id] = { items: [...c.items], checked: new Set() };
+}
+
+function persist() {
+  const out = {};
+  for (const c of CATS) out[c.id] = { items: st[c.id].items, checked: [...st[c.id].checked] };
+  localStorage.setItem('einzug2', JSON.stringify(out));
+}
+
+// --- Progress ---
+function updateProgress() {
+  let total = 0, done = 0;
+  for (const c of CATS) { total += st[c.id].items.length; done += st[c.id].checked.size; }
+  document.getElementById('n-done').textContent  = done;
+  document.getElementById('n-total').textContent = total;
+  document.getElementById('bar-fill').style.width = total ? (done/total*100)+'%' : '0%';
+  for (const c of CATS) {
+    const b = document.getElementById('b-'+c.id);
+    if (!b) continue;
+    const s = st[c.id];
+    const full = s.items.length > 0 && s.checked.size === s.items.length;
+    b.textContent  = s.checked.size + ' / ' + s.items.length;
+    b.className    = 'badge' + (full ? ' full' : '');
+  }
+  if (total > 0 && done === total) boom();
+}
+
+let fired = false;
+function boom() {
+  if (fired) return;
+  fired = true;
+  const end = Date.now() + 3200;
+  (function f() {
+    confetti({ particleCount:4, angle:60,  spread:60, origin:{x:0, y:.7} });
+    confetti({ particleCount:4, angle:120, spread:60, origin:{x:1, y:.7} });
+    if (Date.now() < end) requestAnimationFrame(f);
+  })();
+}
+
+// --- Toggle ---
+function toggle(cid, idx) {
+  const s = st[cid];
+  if (s.checked.has(idx)) { s.checked.delete(idx); fired = false; }
+  else                     { s.checked.add(idx); }
+  persist();
+  const el = document.getElementById('i-'+cid+'-'+idx);
+  if (el) el.className = 'item' + (s.checked.has(idx) ? ' done' : '');
+  updateProgress();
+}
+
+// --- Add item ---
+function addItem(cid) {
+  const inp = document.getElementById('inp-'+cid);
+  const val = inp.value.trim();
+  if (!val) { inp.focus(); return; }
+  const s = st[cid];
+  const idx = s.items.length;
+  s.items.push(val);
+  persist();
+  const list = document.getElementById('lst-'+cid);
+  list.appendChild(mkItem(cid, idx, val, false));
+  inp.value = '';
+  inp.focus();
+  updateProgress();
+}
+
+// --- Helpers ---
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function mkItem(cid, idx, label, checked) {
+  const d = document.createElement('div');
+  d.className = 'item' + (checked ? ' done' : '');
+  d.id = 'i-'+cid+'-'+idx;
+  d.innerHTML = `
+    <div class="cb">
+      <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+        <path d="M1.5 5l3 3 6-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="item-txt">${esc(label)}</span>`;
+  d.onclick = () => toggle(cid, idx);
+  return d;
+}
+
+// --- Reset ---
+function resetAll() {
+  if (!confirm('Alle Häkchen entfernen?')) return;
+  for (const c of CATS) { st[c.id].checked = new Set(); fired = false; }
+  persist();
+  document.querySelectorAll('.item.done').forEach(el => el.classList.remove('done'));
+  updateProgress();
+}
+
+// --- Toggle category ---
+function toggleCat(cid) {
+  document.getElementById('cat-'+cid).classList.toggle('open');
+}
+
+// --- Render ---
+function render() {
+  const main = document.getElementById('main');
+  for (const c of CATS) {
+    const s = st[c.id];
+    const wrap = document.createElement('div');
+    wrap.className = 'cat';
+    wrap.id = 'cat-'+c.id;
+
+    const full0 = s.items.length > 0 && s.checked.size === s.items.length;
+
+    wrap.innerHTML = `
+      <div class="cat-hd" onclick="toggleCat('${c.id}')">
+        <div class="cat-title">
+          <span class="cat-emoji">${c.icon}</span>
+          <span>${esc(c.name)}</span>
+        </div>
+        <div class="cat-meta">
+          <span class="badge${full0?' full':''}" id="b-${c.id}">${s.checked.size} / ${s.items.length}</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div id="lst-${c.id}"></div>
+        <div class="add-row">
+          <input class="add-input" id="inp-${c.id}" type="text" placeholder="Hinzufügen…" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false">
+          <button class="add-btn" onclick="addItem('${c.id}')">+</button>
+        </div>
+      </div>`;
+
+    main.appendChild(wrap);
+
+    const list = document.getElementById('lst-'+c.id);
+    s.items.forEach((item, idx) => list.appendChild(mkItem(c.id, idx, item, s.checked.has(idx))));
+
+    document.getElementById('inp-'+c.id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); addItem(c.id); }
+    });
+  }
+  updateProgress();
+}
+
+initState();
+render();
+</script>
+</body>
+</html>
