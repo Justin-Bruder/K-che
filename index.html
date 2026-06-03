@@ -243,23 +243,23 @@
 <script>
 const CATS = [
   { id:'fridge',   icon:'🧊', name:'Kühlschrank & Frisches',
-    items:['Butter','Milch','Sahne','Käse','Schinken','Salami','Eier','Joghurt','Saure Sahne','Parmesan','Frischkäse','Senf','Ketchup','Mayonnaise','Zitrone','Zwiebeln','Knoblauch','Kartoffeln','Möhren','Paprika','Gurke','Salat','Gemüse','Obst'] },
+    items:['Butter','Milch','Sahne','Käse','Schinken','Salami','Eier','Senf','Ketchup','Mayonnaise','Zwiebeln','Knoblauch','Kartoffeln','Gemüse','Obst'] },
   { id:'bread',    icon:'🍞', name:'Brot & Aufstrich',
     items:['Toast','Brötchen (einfrieren)','Nutella','Erdnussbutter','Frischkäse'] },
   { id:'pantry',   icon:'🥫', name:'Vorratskammer',
-    items:['Nudeln','Reis','Dosentomaten','Passata','Pesto','Tomatenmark','Mais','Kichererbsen','Linsen','Kokosmilch','Gemüsebrühe','Mehl','Zucker','Puderzucker','Backpulver','Paniermehl','Speisestärke','Honig','Haferflocken','Nüsse'] },
-  { id:'oils',     icon:'🫙', name:'Öle, Essig & Soßen',
-    items:['Olivenöl','Rapsöl','Balsamico','Essig','Sojasoße','Worcestersoße','Tabasco / Sriracha','Gewürze (fehlende ergänzen)'] },
+    items:['Nudeln','Reis','Dosentomaten','Pesto','Tomatenmark','Mais','Gemüsebrühe','Mehl','Zucker','Puderzucker','Paniermehl','Speisestärke','Honig'] },
   { id:'frozen',   icon:'❄️', name:'Tiefkühl',
-    items:['TK-Erbsen','Pommes','TK-Pizza','TK-Hähnchen','TK-Steak','TK-Fisch','Eiswürfelform'] },
+    items:['TK-Erbsen','Pommes','TK-Pizza','TK-Hähnchen','TK-Steak','TK-Fisch','Eiswürfel'] },
+  { id:'oils',     icon:'🫙', name:'Öle, Essig & Soßen',
+    items:['Olivenöl','Rapsöl','Balsamico','Essig','Sojasoße','Worcestersoße','Tabasco / Sriracha','fehlende Gewürze'] },
   { id:'drinks',   icon:'☕', name:'Getränke',
     items:['Mineralwasser','Orangensaft','Kaffee','Kaffeefilter','Tee'] },
   { id:'clean',    icon:'🧹', name:'Putzmittel',
-    items:['Spülmittel','Spülmaschinentabs','Backofenreiniger','Entkalker','Spülschwamm','Spülbürste','WC-Reiniger','WC-Bürste','Allzweckreiniger','Waschmittel','Weichspüler','Besen + Kehrschaufel','Gummihandschuhe'] },
+    items:['Spülmittel','Spülmaschinentabs','Backofenreiniger','Entkalker','Spülschwamm','Spülbürste'] },
   { id:'trash',    icon:'🗑️', name:'Müll & Verpackung',
     items:['Müllbeutel','Frischhaltefolie','Alufolie','Backpapier','Gefrierbeutel'] },
   { id:'misc',     icon:'🛒', name:'Kleinkram',
-    items:['Küchenrolle','Taschentücher','Zahnstocher','Gummibänder','Klebeband / Tesa','Schere','Pflaster-Set','Batterien'] },
+    items:['Küchenrolle','Taschentücher','Zahnstocher','Gummibänder'] },
 ];
 
 // --- State ---
