@@ -290,7 +290,7 @@ const CATS = [
 let st = {};
 
 function initState() {
-  const raw = localStorage.getItem('einzug2');
+  const raw = localStorage.getItem('einzug3');
   if (raw) {
     try {
       const p = JSON.parse(raw);
@@ -310,7 +310,7 @@ function initState() {
 function persist() {
   const out = {};
   for (const c of CATS) out[c.id] = { items: st[c.id].items, checked: [...st[c.id].checked] };
-  localStorage.setItem('einzug2', JSON.stringify(out));
+  localStorage.setItem('einzug3', JSON.stringify(out));
 }
 
 // --- Progress ---
